@@ -17,15 +17,15 @@
       <a-breadcrumb style="margin: 16px 0">
         <a-breadcrumb-item>Statue</a-breadcrumb-item>
       </a-breadcrumb>
-      <div :style="{ background: '#fff', padding: '24px', minHeight: '280px' }">
-        NIFI-SFTP-DEV
-        <a-progress type="circle" :percent="test[0]" status="exception" />
+      <div :style="{ background: '#fff', padding: '24px', minHeight: '280px' }" v-bind="nifistate">
+        {{nifistate[0].name}}
+        <a-progress type="circle" :percent="100" status="exception" />
         NIFI-SFTP-QAS
-        <a-progress type="circle" :percent="test[1]" />
+        <a-progress type="circle" :percent="100" />
         NIFI-SFTP-PRD
-        <a-progress type="circle" :percent="test[2]" />
+        <a-progress type="circle" :percent="100" />
         NIFI-K8S-PRD
-        <a-progress type="circle" :percent="test[3]" />
+        <a-progress type="circle" :percent="100" />
       </div>
     </a-layout-content>
     <a-layout-footer style="text-align: center">
@@ -35,33 +35,24 @@
 </template>
 <script>
 import { defineComponent, ref } from 'vue';
-
+import { mapState } from "vuex";
 export default defineComponent({
+  computed: mapState(['nifistate']),
+  created() {
+    this.$store.dispatch('loadNifiState');
+  },
   setup() {
     return {
       selectedKeys: ref(['2']),
     };
-  },
-  methods: {
-    getnifistate() {
-        const api = 'https://localhost:44396/api/NifiTool/NiFiState';
-        this.$http.get(api).then(response => {
-            console.log(response);
-        });
-    }
-  },
-  computed: {
-    test () {
-        return this.$store.state.nifistate
-    }
-  },
-  mounted: {
-    test () {
-        this.$nextTick(() => {
-            setInterval(this.getnifistate, 5000);
-        });
-    }
   }
+  //mounted: {
+  //  test () {
+  //      this.$nextTick(() => {
+  //          setInterval(this.getnifistate, 5000);
+  //      });
+  //  }
+  //}
 });
 </script>
 <style>
