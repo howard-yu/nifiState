@@ -17,15 +17,27 @@
       <a-breadcrumb style="margin: 16px 0">
         <a-breadcrumb-item>Statue</a-breadcrumb-item>
       </a-breadcrumb>
-      <div :style="{ background: '#fff', padding: '24px', minHeight: '280px' }" v-bind="nifistate">
-        {{nifistate[0].name}}
-        <a-progress type="circle" :percent="100" status="exception" />
-        NIFI-SFTP-QAS
-        <a-progress type="circle" :percent="100" />
-        NIFI-SFTP-PRD
-        <a-progress type="circle" :percent="100" />
-        NIFI-K8S-PRD
-        <a-progress type="circle" :percent="100" />
+      <div :style="{ background: '#fff', padding: '24px', minHeight: '280px'}">
+        <a-row>
+          NIFI-SFTP-PRD
+          <a-progress type="circle" :percent="100" status="exception" />
+          <a-col :span="12">
+          </a-col>
+          NIFI-SFTP-QAS
+          <a-progress type="circle" :percent="100" status="exception" />
+          <a-col :span="12">
+          </a-col>
+        </a-row>
+        <a-row>
+          NIFI-SFTP-DEV
+          <a-progress type="circle" :percent="100" />
+          <a-col :span="12">
+          </a-col>
+          NIFI-K8S-PRD
+          <a-progress type="circle" :percent="100" />
+          <a-col :span="12">
+          </a-col>
+        </a-row>
       </div>
     </a-layout-content>
     <a-layout-footer style="text-align: center">
@@ -39,6 +51,15 @@ import { mapState } from "vuex";
 export default defineComponent({
   computed: mapState(['nifistate']),
   created() {
+　　//在頁面載入時讀取sessionStorage裡的狀態資訊
+    if (sessionStorage.getItem("store") ) {
+        this.$store.replaceState(Object.assign({}, this.$store.state,JSON.parse(sessionStorage.getItem("store"))))
+    }
+
+    //在頁面重新整理時將vuex裡的資訊儲存到sessionStorage裡
+    window.addEventListener("beforeunload",()=>{
+        sessionStorage.setItem("store",JSON.stringify(this.$store.state))
+    })
     this.$store.dispatch('loadNifiState');
   },
   setup() {
